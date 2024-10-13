@@ -1,3 +1,3 @@
 export const DOMAIN = {
-	LINKEDIN: "https://www.linkedin.com/"
+	LINKEDIN: "https://linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search"
 }

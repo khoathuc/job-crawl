@@ -1,17 +1,49 @@
+import { ElementHandle } from "puppeteer";
 import { BaseScraper } from "../base.scraper";
-import { JobInterface } from "../../interfaces/job";
-import { LinkedinParamType } from "./crawler";
 
 export class LinkedinScraper extends BaseScraper {
-    private url: string = "";
+    JOB_SEARCH_SELECTOR = ".job-search-card";
+    private res = [];
 
-    constructor(url: string) {
-        super();
-        this.url = url;
+    /**
+     * @desc scrape linkedin
+     * @returns
+     */
+    async scrape() {
+        try {
+            // Init browser and page
+            await this.init();
+
+            // scrape elements
+            const elementHdls = await this.fetchElements(
+                this.JOB_SEARCH_SELECTOR
+            );
+
+            // Fetch all element and save jobs.
+            await Promise.all(
+                elementHdls.map(async (elementHdl) => {
+                    await this.scrapeElement(elementHdl);
+                })
+            );
+        } catch (error) {
+            // TODO : handle error
+            console.log(error.message);
+        } finally {
+            // await this.close();
+        }
     }
 
-    async scrape(): Promise<JobInterface[]> {
-        
-        return [];
+    /**
+     * @desc scrape each element
+     * @param {ElementHandle} elementHdl
+     */
+    async scrapeElement(elementHdl: ElementHandle) {
+        await elementHdl.evaluate((el) => {
+            const title = el
+                .getElementsByClassName(".base-search-card__title")[0]
+                .textContent?.trim();
+
+            console.log(title);
+        });
     }
 }

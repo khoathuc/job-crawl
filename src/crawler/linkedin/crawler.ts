@@ -1,5 +1,6 @@
 import { DOMAIN } from "../../constants/index";
 import { BaseCrawler } from "../base.crawler";
+import { ConfigScraper } from "../types";
 import { LinkedinScraper } from "./scraper";
 
 export type LinkedinParamType = {
@@ -8,18 +9,25 @@ export type LinkedinParamType = {
 };
 
 export class LinkedinCrawler extends BaseCrawler {
-    readonly domain = DOMAIN.LINKEDIN;
+    URL = DOMAIN.LINKEDIN;
 
-    async crawl(params?: LinkedinParamType, maxPages: number = 10) {
+    async crawl(
+        conf: ConfigScraper,
+        params?: LinkedinParamType,
+        maxPages: number = 3
+    ) {
         let currPage = 1;
 
         // construct new scraper and fetch jobs.
         while (currPage <= maxPages) {
             const scraper = new LinkedinScraper(
+                conf,
                 this.makeURL({ page: currPage, params })
             );
 
             await scraper.scrape();
+
+            currPage++;
         }
     }
 
@@ -37,8 +45,6 @@ export class LinkedinCrawler extends BaseCrawler {
             ? "keywords=" + params.keywords
             : "";
 
-        return `${this.domain}?${keywordsText}&start=${
-            page * 25
-        }${locationText}`;
+        return `${this.URL}?${keywordsText}&start=${page * 25}${locationText}`;
     }
 }
